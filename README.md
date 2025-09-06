@@ -1,36 +1,72 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+ElementPay Frontend Assessment
+A Next.js Web3 application that allows users to connect wallets, create orders, and track their status through polling and webhook notifications.
 
-## Getting Started
+Features
 
-First, run the development server:
+Multi-wallet support: Connect via MetaMask or WalletConnect
+Order creation: Form-based order creation with validation
+Real-time tracking: Status updates via polling and webhooks
+Race condition handling: First finalizer wins, duplicates ignored
+Timeout handling: 60-second timeout with retry functionality
 
-```bash
+
+git clone https://github.com/Seyi-React/elementpay-ass
+cd elementpay-frontend-assessment
+
+npm install
+
+
+# Required for webhook signature verification
+WEBHOOK_SECRET=shh_super_secret
+
+
+NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID=your_project_id_here
+
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+API ENDPOINTS
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+POST /api/mock/orders/create
+Content-Type: application/json
 
-## Learn More
+{
+  "amount": 1500,
+  "currency": "KES", 
+  "token": "USDC",
+  "note": "optional"
+}
 
-To learn more about Next.js, take a look at the following resources:
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+GET /api/mock/orders/:order_id
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
 
-## Deploy on Vercel
+Webhooks Endpoints
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+POST /api/webhooks/elementpay
+Content-Type: application/json
+X-Webhook-Signature: t=<timestamp>,v1=<signature>
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+{
+  "type": "order.settled",
+  "data": {
+    "order_id": "ord_0xabc123",
+    "status": "settled"
+  }
+}
+
+Webhook Testing
+
+curl -X POST http://localhost:3000/api/webhooks/elementpay \
+  -H 'Content-Type: application/json' \
+  -H 'X-Webhook-Signature: t=1710000000,v1=3QXTcQv0m0h4QkQ0L0w9ZsH1YFhZgMGnF0d9Xz4P7nQ=' \
+  -d '{"type":"order.settled","data":{"order_id":"ord_0xabc123","status":"settled"}}'
+
+  Invalid Signature (should return 401/403)
+  curl -X POST http://localhost:3000/api/webhooks/elementpay \
+  -H 'Content-Type: application/json' \
+  -H 'X-Webhook-Signature: t=1710000300,v1=AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=' \
+  -d '{"type":"order.failed","data":{"order_id":"ord_0xabc123","status":"failed"}}'
+
+
+  
