@@ -6,7 +6,7 @@ import { Wallet, Unplug } from 'lucide-react'
 
 export function WalletConnect() {
   const { address, isConnected, chain } = useAccount()
-  const { connect } = useConnect()
+  const { connect, error: connectError } = useConnect()
   const { disconnect } = useDisconnect()
 
   if (isConnected) {
@@ -33,6 +33,7 @@ export function WalletConnect() {
           </div>
         </div>
         
+        
         <button
           onClick={() => disconnect()}
           className="w-full mt-4 bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-md flex items-center justify-center gap-2 transition-colors"
@@ -55,19 +56,29 @@ export function WalletConnect() {
         Connect your wallet to create orders and manage transactions.
       </p>
       
+      {connectError && (
+        <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded mb-4">
+          <p className="text-sm">
+            {connectError.message || 'Failed to connect wallet. Please try again.'}
+          </p>
+        </div>
+      )}
+      
       <div className="space-y-3">
         <button
           onClick={() => connect({ connector: injected() })}
           className="w-full bg-orange-600 hover:bg-orange-700 text-white px-4 py-2 rounded-md transition-colors flex items-center justify-center gap-2"
         >
-          <img src="/metamask-icon.svg" alt="MetaMask" className="w-5 h-5" onError={(e) => e.currentTarget.style.display = 'none'} />
+          <div className="w-5 h-5 bg-orange-100 rounded-full flex items-center justify-center">
+            <span className="text-orange-600 text-xs font-bold">M</span>
+          </div>
           Connect MetaMask
         </button>
         
         <button
           onClick={() => connect({ 
             connector: walletConnect({ 
-              projectId: process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID || 'demo-project-id' 
+              projectId: process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID || 'b3ac1a80020665194104546e7be05364' 
             }) 
           })}
           className="w-full bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md transition-colors flex items-center justify-center gap-2"

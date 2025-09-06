@@ -16,7 +16,7 @@ export function OrderTracking({ order, onComplete }: OrderTrackingProps) {
   const [isFinalized, setIsFinalized] = useState(false)
 
   const finalizeOrder = useCallback((newStatus: OrderStatus, source: 'polling' | 'webhook') => {
-    if (isFinalized) return // Ignore if already finalized
+    if (isFinalized) return ;
     
     console.log(`Order finalized via ${source}:`, newStatus)
     setIsFinalized(true)
@@ -26,7 +26,7 @@ export function OrderTracking({ order, onComplete }: OrderTrackingProps) {
 
   // Polling effect
   useEffect(() => {
-    if (!isPolling || isFinalized) return
+    if (!isPolling || isFinalized) return;
 
     const pollInterval = setInterval(async () => {
       try {

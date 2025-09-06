@@ -69,7 +69,7 @@ export function OrderForm() {
       setErrors({})
     } catch (error) {
       console.error('Order creation failed:', error)
-      // You could add error handling UI here
+      setErrors({ general: 'Failed to create order. Please try again.' })
     } finally {
       setIsSubmitting(false)
     }
@@ -175,6 +175,12 @@ export function OrderForm() {
             rows={3}
           />
         </div>
+
+        {errors.general && (
+          <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded">
+            {errors.general}
+          </div>
+        )}
 
         <button
           type="submit"

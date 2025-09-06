@@ -7,13 +7,23 @@ import { config } from '@/lib/wagmi'
 
 const queryClient = new QueryClient()
 
-const WalletContext = createContext<{}>({})
+interface WalletContextType {
+  isConnected: boolean
+  address?: string
+  chainId?: number
+}
+
+const WalletContext = createContext<WalletContextType>({
+  isConnected: false,
+  address: undefined,
+  chainId: undefined
+})
 
 export function WalletProvider({ children }: { children: ReactNode }) {
   return (
     <WagmiProvider config={config}>
       <QueryClientProvider client={queryClient}>
-        <WalletContext.Provider value={{}}>
+        <WalletContext.Provider value={{ isConnected: false }}>
           {children}
         </WalletContext.Provider>
       </QueryClientProvider>

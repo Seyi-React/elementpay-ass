@@ -27,7 +27,7 @@ npm run dev
 
 API ENDPOINTS
 
-POST /api/mock/orders/create
+POST /api/mock/orders
 Content-Type: application/json
 
 {
